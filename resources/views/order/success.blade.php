@@ -129,7 +129,7 @@
                         <b class="text-[14px] uppercase tracking-wider block mb-1">Bukti Transfer Ditolak!</b>
                         Gambar sebelumnya tidak valid atau buram. Silakan unggah ulang bukti transfer yang benar agar pesanan dapat diproses.
                     </div>
-                @else
+                @elseif(!$order->bukti_bayar)
                     <div class="p-4 rounded-[12px] bg-[#e6f4ea] text-[#03913F] text-center text-[13px] font-[800] mb-6 border border-[#03913F]/20">
                         Silakan scan QRIS di bawah dan upload bukti transfer.
                     </div>
