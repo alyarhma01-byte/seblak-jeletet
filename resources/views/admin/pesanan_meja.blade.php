@@ -147,7 +147,14 @@
                                         <div class="text-center p-3 mb-3 rounded-[12px] bg-[#e6f4ea] border border-[#03913F]/20">
                                             <span class="text-[11px] font-[900] text-[#03913F] tracking-wider uppercase">Pembayaran via QRIS</span>
                                         </div>
-                                        @if($order->bukti_bayar)
+
+                                        
+                                        @if($order->bukti_bayar === 'DITOLAK')
+                                            <div class="text-center p-3 rounded-[12px] bg-[#FDE7E7] border-[2px] border-[#DC0F11]/40 shadow-sm animate-pulse">
+                                                <span class="block text-[12px] font-[900] text-[#DC0F11] uppercase tracking-wider mb-1">⚠️ Bukti Ditolak</span>
+                                                <span class="text-[10px] font-[800] text-[#DC0F11]/80">Menunggu pelanggan upload ulang...</span>
+                                            </div>
+                                        @elseif($order->bukti_bayar)
                                             <button type="button" class="w-full bg-[#03913F] text-white rounded-[12px] py-3 text-[13px] font-[900] hover:bg-green-700 transition shadow-md tracking-wide animate-pulse"
                                                 onclick="bukaModalBukti('{{ asset($order->bukti_bayar) }}', '{{ $order->id }}', '{{ $order->no_meja }}', '{{ $order->total_harga }}')">
                                                 CEK BUKTI TRANSFER
@@ -159,7 +166,7 @@
                                         @endif
                                     @endif
 
-                                <!-- 🔥 KODE BARU: MURNI HANYA QRIS KEKURANGAN 🔥 -->
+
                                 @elseif($order->status_pembayaran == 'Kurang Bayar')
                                     @php
                                         $kekurangan = $order->total_harga - ($order->uang_bayar ?? 0);
@@ -169,13 +176,19 @@
                                         <span class="text-[18px] font-[900] text-[#DC0F11]">Rp {{ number_format($kekurangan, 0, ',', '.') }}</span>
                                     </div>
 
-                                    @if($order->bukti_bayar && $order->bukti_bayar !== 'DITOLAK')
+
+                                    @if($order->bukti_bayar === 'DITOLAK')
+                                        <div class="text-center p-3 rounded-[12px] bg-[#FDE7E7] border-[2px] border-[#DC0F11]/40 shadow-sm animate-pulse mb-3">
+                                            <span class="block text-[12px] font-[900] text-[#DC0F11] uppercase tracking-wider mb-1">⚠️ Bukti Sisa Ditolak</span>
+                                            <span class="text-[10px] font-[800] text-[#DC0F11]/80">Menunggu pelanggan upload ulang...</span>
+                                        </div>
+                                    @elseif($order->bukti_bayar)
                                         <button type="button" class="w-full bg-[#03913F] text-white rounded-[12px] py-3 text-[13px] font-[900] hover:bg-green-700 transition shadow-md tracking-wide animate-pulse flex items-center justify-center gap-1.5"
                                             onclick="bukaModalBukti('{{ asset($order->bukti_bayar) }}', '{{ $order->id }}', '{{ $order->no_meja }}', '{{ $kekurangan }}')">
                                             <span>📸</span> CEK BUKTI KEKURANGAN
                                         </button>
                                     @else
-                                        <div class="text-center p-3 bg-[#F3F3F3] rounded-[12px] border border-black/5">
+                                        <div class="text-center p-3 bg-[#F3F3F3] rounded-[12px] border border-black/5 mb-3">
                                             <span class="text-[11px] font-[800] text-[#8A8A8E]">⏳ Menunggu Bukti Transfer Sisa...</span>
                                         </div>
                                     @endif
@@ -432,7 +445,7 @@
             let btnKurang = document.getElementById('btn-kurang-bayar');
             let display = document.getElementById('qris-status-display');
 
-            // 🔥 PERBAIKAN: Kalau inputnya KOSONG (Kucing/Selfie/AI Gagal Baca)
+
             if (inputElement.value === "") {
                 display.innerText = "Nominal Tidak Terbaca! tolak bukti pembayaran.";
                 display.style.color = "#DC0F11"; // Merah
