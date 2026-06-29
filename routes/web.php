@@ -30,7 +30,7 @@ Route::get('/order/success/{id}', [CartController::class, 'success'])->name('ord
 Route::post('/pesanan/{id}/upload-bukti', [CartController::class, 'uploadBukti'])->name('pesanan.upload_bukti');
 // Rute untuk pelanggan melihat struk tanpa perlu login
 Route::get('/pesanan/struk/{id}', [App\Http\Controllers\CartController::class, 'cetakStrukPelanggan'])->name('pelanggan.struk');
-
+Route::get('/kasir/struk/{id}', [AdminController::class, 'cetakStruk'])->name('kasir.struk');
 
 // ==========================================
 // AREA AUTH (LOGIN & LOGOUT)
@@ -61,7 +61,7 @@ Route::middleware(['auth', 'role:kasir,pemilik'])->group(function () {
 
     // Riwayat & Tutup Kasir
     Route::get('/kasir/riwayat', [AdminController::class, 'riwayat'])->name('kasir.riwayat');
-    Route::get('/kasir/struk/{id}', [AdminController::class, 'cetakStruk'])->name('kasir.struk');
+
     Route::post('/kasir/tolak-bukti/{id}', [AdminController::class, 'tolakBukti'])->name('kasir.tolak_bukti');
     Route::post('/kasir/proses-tutup', [AdminController::class, 'prosesTutupKasir'])->name('kasir.proses_tutup');
 
