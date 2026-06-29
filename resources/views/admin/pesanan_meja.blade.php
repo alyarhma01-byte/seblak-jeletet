@@ -434,7 +434,7 @@
 
             // 🔥 PERBAIKAN: Kalau inputnya KOSONG (Kucing/Selfie/AI Gagal Baca)
             if (inputElement.value === "") {
-                display.innerText = "⚠️ Nominal Tidak Terbaca! Isi manual atau tolak.";
+                display.innerText = "Nominal Tidak Terbaca! tolak bukti pembayaran.";
                 display.style.color = "#DC0F11"; // Merah
                 btnLunas.disabled = true;  // Kunci tombol Lunas
                 btnKurang.disabled = true; // Kunci tombol Kurang
