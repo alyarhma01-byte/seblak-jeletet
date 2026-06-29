@@ -149,12 +149,24 @@
         </div>
 
         <div class="border-y border-black/10 py-5 mb-6 space-y-4">
-            @foreach($details as $item)
+            @foreach($order->details as $item)
             <div class="flex justify-between items-start text-[14px]">
-                <div class="pr-4">
-                    <div class="font-[800] text-[#1A1A1A] leading-tight">{{ $item->qty }}x {{ $item->menu_name }}</div>
+                <div class="pr-4 flex-1">
+                    <div class="font-[800] text-[#1A1A1A] leading-tight mb-1">{{ $item->qty }}x {{ $item->menu_name }}</div>
+
+                    @if($item->catatan)
+                        <div class="text-[12px] text-[#5e5e5e] mb-1 font-[600] italic leading-snug">
+                            Isian: {{ $item->catatan }}
+                        </div>
+                    @endif
+
+                    <div class="text-[11px] text-[#8A8A8E] flex flex-wrap gap-1.5">
+                        @if($item->level !== null) <span class="bg-[#F3F3F3] px-2 py-0.5 rounded-[4px] font-[800]">Lv {{ $item->level }}</span> @endif
+                        @if($item->kencur) <span class="bg-[#F3F3F3] px-2 py-0.5 rounded-[4px] font-[800]">{{ $item->kencur }}</span> @endif
+                        @if($item->kuah) <span class="bg-[#F3F3F3] px-2 py-0.5 rounded-[4px] font-[800]">{{ $item->kuah }}</span> @endif
+                    </div>
                 </div>
-                <div class="font-[800] text-[#1A1A1A] whitespace-nowrap">Rp {{ number_format($item->harga * $item->qty, 0, ',', '.') }}</div>
+                <div class="font-[900] text-[#1A1A1A] whitespace-nowrap pl-3">Rp {{ number_format($item->harga * $item->qty, 0, ',', '.') }}</div>
             </div>
             @endforeach
         </div>
