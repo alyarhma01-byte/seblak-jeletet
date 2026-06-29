@@ -389,7 +389,7 @@
             let btnKurang = document.getElementById('btn-kurang-bayar');
 
             inputNominal.value = "";
-            statusDisplay.innerText = "🤖 AI Sedang Membaca Struk... ⏳";
+            statusDisplay.innerText = " AI Sedang Membaca Struk... ";
             statusDisplay.style.color = "#8A8A8E";
             btnLunas.disabled = true; btnKurang.disabled = true;
             document.getElementById('link-bukti-full').href = imageUrl;
@@ -399,16 +399,23 @@
 
             Tesseract.recognize(imageUrl, 'ind', { logger: m => console.log(m) })
             .then(({ data: { text } }) => {
-                let nominalDitemukan = totalHarga;
+
+                let nominalDitemukan = "";
                 let match = text.match(/Rp\s*([\d\.\,]+)/i);
+
                 if (match) {
                     let angkaBersih = parseInt(match[1].replace(/[\.\,]/g, ''));
-                    if (!isNaN(angkaBersih) && angkaBersih > 0) { nominalDitemukan = angkaBersih; }
+                    if (!isNaN(angkaBersih) && angkaBersih > 0) {
+                        nominalDitemukan = angkaBersih;
+                    }
                 }
+
                 inputNominal.value = nominalDitemukan;
-                hitungKembalianQRIS();
+                hitungKembalianQRIS(); // Panggil fungsi hitung untuk cek statusnya
             }).catch(err => {
-                inputNominal.value = totalHarga; hitungKembalianQRIS();
+                // Kalau error, biarkan kosong
+                inputNominal.value = "";
+                hitungKembalianQRIS();
             });
         }
 
@@ -419,12 +426,24 @@
 
         function hitungKembalianQRIS() {
             let total = parseInt(document.getElementById('bukti-tagihan-raw').value);
-            let bayar = parseInt(document.getElementById('input-nominal-qris').value) || 0;
-            let selisih = bayar - total;
+            let inputElement = document.getElementById('input-nominal-qris');
 
             let btnLunas = document.getElementById('btn-lunas-qris');
             let btnKurang = document.getElementById('btn-kurang-bayar');
             let display = document.getElementById('qris-status-display');
+
+            // 🔥 PERBAIKAN: Kalau inputnya KOSONG (Kucing/Selfie/AI Gagal Baca)
+            if (inputElement.value === "") {
+                display.innerText = "⚠️ Nominal Tidak Terbaca! Isi manual atau tolak.";
+                display.style.color = "#DC0F11"; // Merah
+                btnLunas.disabled = true;  // Kunci tombol Lunas
+                btnKurang.disabled = true; // Kunci tombol Kurang
+                return; // Stop perhitungan di sini
+            }
+
+            // Hitungan normal kalau ada angkanya
+            let bayar = parseInt(inputElement.value) || 0;
+            let selisih = bayar - total;
 
             if (selisih < 0) {
                 display.innerText = "Kurang Rp " + Math.abs(selisih).toLocaleString('id-ID');
