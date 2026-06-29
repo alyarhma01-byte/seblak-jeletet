@@ -153,19 +153,18 @@ class AdminController extends Controller
         // 3. Cek apakah meja tersebut sudah ada transaksi aktif yang belum bayar
         $order = Order::where('no_meja', $no_meja)->where('status_pembayaran', 'Belum Bayar')->first();
 
+        $isMerge = false;
+
         if ($order) {
             // Jika meja sudah ada pesanan (misal dari QR), langsung akumulasikan total harganya
             $order->total_harga += $total_prasmanan;
-
-
             $order->metode_pembayaran = $request->metode_pembayaran ?? 'Tunai';
-
             $order->save();
+
             $targetOrder = $order;
 
-            // Buat pesan flash khusus jika gabung dengan pesanan QR
             if ($order->tipe_pesanan != 'Prasmanan Kasir') {
-                return redirect()->route('kasir.meja')->with('success', 'Harga ditambahkan ke pesanan QR Meja ' . $no_meja);
+                $isMerge = true; // Tandai bahwa ini penggabungan dengan meja QR
             }
 
         } else {
@@ -181,6 +180,7 @@ class AdminController extends Controller
             $targetOrder->save();
         }
 
+
         // 4. Catat item "Seblak Prasmanan" ke detail pesanan (Hanya jika harganya > 0)
         if ($total_prasmanan > 0) {
             OrderDetail::create([
@@ -195,9 +195,15 @@ class AdminController extends Controller
         if ($request->filled('minuman_id') && $request->filled('qty_minuman')) {
             $minuman = Menu::find($request->minuman_id);
             if ($minuman) {
-                // Tambah harga minuman ke total_harga
-                $targetOrder->total_harga += ($minuman->harga * $request->qty_minuman);
-                $targetOrder->save();
+                // Tambah harga minuman ke total_harga (Jika order baru, karena kalau merge di atas baru nambahin $total_prasmanan saja)
+                if(!$order) {
+                    $targetOrder->total_harga += ($minuman->harga * $request->qty_minuman);
+                    $targetOrder->save();
+                } else {
+                    // Kalau merge, tambahkan harga minuman ekstra ke tagihan yang sudah digabung tadi
+                    $targetOrder->total_harga += ($minuman->harga * $request->qty_minuman);
+                    $targetOrder->save();
+                }
 
                 // Simpan ke detail pesanan
                 OrderDetail::create([
@@ -207,6 +213,11 @@ class AdminController extends Controller
                     'qty' => $request->qty_minuman,
                 ]);
             }
+        }
+
+        // 6. Redirect dengan pesan yang sesuai
+        if ($isMerge) {
+             return redirect()->route('kasir.meja')->with('success', 'Harga dan Menu Prasmanan berhasil ditambahkan ke pesanan QR Meja ' . $no_meja);
         }
 
         return back()->with('success', 'Pesanan berhasil ditambahkan ke Meja ' . $no_meja);

@@ -148,7 +148,7 @@
                                             <span class="text-[11px] font-[900] text-[#03913F] tracking-wider uppercase">Pembayaran via QRIS</span>
                                         </div>
 
-                                        
+
                                         @if($order->bukti_bayar === 'DITOLAK')
                                             <div class="text-center p-3 rounded-[12px] bg-[#FDE7E7] border-[2px] border-[#DC0F11]/40 shadow-sm animate-pulse">
                                                 <span class="block text-[12px] font-[900] text-[#DC0F11] uppercase tracking-wider mb-1">⚠️ Bukti Ditolak</span>
@@ -185,7 +185,7 @@
                                     @elseif($order->bukti_bayar)
                                         <button type="button" class="w-full bg-[#03913F] text-white rounded-[12px] py-3 text-[13px] font-[900] hover:bg-green-700 transition shadow-md tracking-wide animate-pulse flex items-center justify-center gap-1.5"
                                             onclick="bukaModalBukti('{{ asset($order->bukti_bayar) }}', '{{ $order->id }}', '{{ $order->no_meja }}', '{{ $kekurangan }}')">
-                                            <span>📸</span> CEK BUKTI KEKURANGAN
+                                            CEK BUKTI KEKURANGAN
                                         </button>
                                     @else
                                         <div class="text-center p-3 bg-[#F3F3F3] rounded-[12px] border border-black/5 mb-3">
